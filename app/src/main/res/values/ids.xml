@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="driver" type="id">Driver</item>
+    <item name="customer" type="id">Customer</item>
+    <item name="logout" type="id">Logout</item>
+</resources>
