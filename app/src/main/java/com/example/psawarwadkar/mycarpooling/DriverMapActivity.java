@@ -91,7 +91,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             }
         });
 
-        getAssignedCustomer();
+        getAssignedCustomer();   
     }
 
     private void getAssignedCustomer(){
