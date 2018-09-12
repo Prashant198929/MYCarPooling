@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -62,11 +63,11 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-         mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }else {
+            ActivityCompat.requestPermissions(DriverMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+        } else {
             mapFragment.getMapAsync(this);
         }
 
@@ -107,7 +108,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
 
     @Override
-    public void onLocationChanged(Location location){
+    public void onLocationChanged(Location location) {
+        if (getApplicationContext() != null) {
             mLastLocation = location;
 
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -120,10 +122,10 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
 
             GeoFire geoFire = new GeoFire(ref);
-            geoFire.setLocation(userId, new GeoLocation(location.getLatitude(), location.getLongitude()));
+            geoFire.setLocation(userId, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
 
         }
-
+    }
 
 
     @Override
@@ -135,7 +137,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
+            ActivityCompat.requestPermissions(DriverMapActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 
@@ -148,25 +150,29 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     }
 
 
-
-
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
 
-
-
+    final int LOCATION_REQUEST_CODE = 1;
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driversAvailable");
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        GeoFire geoFire = new GeoFire(ref);
-        geoFire.removeLocation(userId);
+        switch (requestCode) {
+            case LOCATION_REQUEST_CODE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    mapFragment.getMapAsync(this);
+                } else {
+                    Toast.makeText(getApplicationContext(), "Please provide the permission", Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+
+        }
+
 
     }
 }
