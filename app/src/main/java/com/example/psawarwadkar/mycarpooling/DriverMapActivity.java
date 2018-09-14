@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -65,6 +67,11 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private Boolean isLoggingOut = false;
 
+    private LinearLayout mCustomerInfo;
+    private TextView mCustomerName;
+    private TextView mCustomerPhone;
+    private TextView mCustomerDestination;
+
 
 
     @Override
@@ -81,6 +88,15 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         } else {
             mapFragment.getMapAsync(this);
         }
+
+
+        mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
+        mCustomerName = (TextView) findViewById(R.id.customerName);
+        mCustomerPhone = (TextView) findViewById(R.id.customenPhone);
+        mCustomerDestination = (TextView) findViewById(R.id.customerDestination);
+
+
+
 
         mSettings = (Button) findViewById(R.id.settings);
         mLogout = (Button) findViewById(R.id.logout);
@@ -110,6 +126,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         });
 
         getAssignedCustomer();
+        getAssignedCustomerInfo();
     }
 
     private void getAssignedCustomer(){
@@ -168,7 +185,36 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     }
 
 
-    @Override
+    private void getAssignedCustomerInfo() {
+        mCustomerInfo.setVisibility(View.VISIBLE);
+        final DatabaseReference mCustomerDataBase = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId);
+        mCustomerDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                    if (map.get("name") != null) {
+                        mCustomerName.setText(map.get("name").toString());
+                    }
+                    if (map.get("phone") != null) {
+                        mCustomerPhone.setText(map.get("phone").toString());
+                    }
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+
+
+            @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 

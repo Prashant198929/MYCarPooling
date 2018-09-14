@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -49,6 +51,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class CustomerMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
@@ -63,6 +66,9 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
     private SupportMapFragment mapFragment;
 
+    private LinearLayout mDriverInfo;
+    private TextView mDriverName, mDriverPhone, mDriverCar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +82,12 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         } else {
             mapFragment.getMapAsync(this);
         }
+
+
+        mDriverInfo = (LinearLayout) findViewById(R.id.customerInfo);
+        mDriverName = (TextView) findViewById(R.id.driverName);
+        mDriverPhone = (TextView) findViewById(R.id.driverPhone);
+        mDriverCar = (TextView) findViewById(R.id.driverCar);
 
 
         mLogout = (Button) findViewById(R.id.logout);
@@ -148,6 +160,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
 
 
                     getDriverLocation();
+                    getDriverInfo();
                     mRequest.setText("Looking for Driver Location...");
 
                 }
@@ -227,6 +240,35 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
             }
         });
 
+    }
+
+    private void getDriverInfo() {
+        mDriverInfo.setVisibility(View.VISIBLE);
+        final DatabaseReference mCustomerDataBase = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverFoundID);
+        mCustomerDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists() && dataSnapshot.getChildrenCount() > 0) {
+                    Map<String, Object> map = (Map<String, Object>) dataSnapshot.getValue();
+
+                    if (map.get("name") != null) {
+                        mDriverName.setText(map.get("name").toString());
+                    }
+                    if (map.get("phone") != null) {
+                        mDriverPhone.setText(map.get("phone").toString());
+                    }
+                    if (map.get("car") != null) {
+                        mDriverCar.setText(map.get("car").toString());
+                    }
+                }
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override

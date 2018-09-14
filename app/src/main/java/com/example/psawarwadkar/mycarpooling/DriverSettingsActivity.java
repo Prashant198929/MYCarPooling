@@ -106,10 +106,12 @@ public class DriverSettingsActivity extends AppCompatActivity {
 
         mName = mNameField.getText().toString();
         mPhone = mPhoneField.getText().toString();
+        mCar = mCarField.getText().toString();
 
         Map userInfo = new HashMap();
         userInfo.put("name", mName);
         userInfo.put("phone", mPhone);
+        userInfo.put("car", mCar);
         mDriverDatabase.updateChildren(userInfo);
 
         finish();
