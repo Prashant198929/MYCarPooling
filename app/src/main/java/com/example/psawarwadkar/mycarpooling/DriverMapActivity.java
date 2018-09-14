@@ -63,6 +63,9 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private SupportMapFragment mapFragment;
 
+    private Boolean isLoggingOut = false;
+
+
 
     @Override
 
@@ -83,6 +86,10 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                isLoggingOut = true;
+
+                disconnectDriver();
+
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(DriverMapActivity.this, MainActivity.class);
                 startActivity(intent);
@@ -96,7 +103,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private void getAssignedCustomer(){
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child("customerRideId");
+        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId);
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -248,8 +255,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     }
 
-    protected void onStop(){
-        super.onStop();
+    private void disconnectDriver(){
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("driverAvailable");
@@ -257,5 +263,15 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
         GeoFire geoFire = new GeoFire(ref);
         geoFire.removeLocation(userId);
+
+    }
+
+    protected void onStop(){
+        super.onStop();
+        if(!isLoggingOut){
+           disconnectDriver();
+
+        }
+
     }
 }
