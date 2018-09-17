@@ -20,6 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.directions.route.Route;
+import com.directions.route.RouteException;
+import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
@@ -47,12 +50,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
-public class DriverMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
+public class DriverMapActivity extends FragmentActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener, RoutingListener {
 
     private GoogleMap mMap;
     GoogleApiClient mGoogleApiClient;
@@ -173,9 +177,8 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                         LatLng driverLatLng = new LatLng(locationLat, locationLng);
                         mMap.addMarker(new MarkerOptions().position(driverLatLng).title("Pickup location"));
 
-
-
                         getAssignedCustomerPickupLocation();
+
                     }
                 }
             }
@@ -332,6 +335,26 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
            disconnectDriver();
 
         }
+
+    }
+
+    @Override
+    public void onRoutingFailure(RouteException e) {
+
+    }
+
+    @Override
+    public void onRoutingStart() {
+
+    }
+
+    @Override
+    public void onRoutingSuccess(ArrayList<Route> arrayList, int i) {
+
+    }
+
+    @Override
+    public void onRoutingCancelled() {
 
     }
 }
