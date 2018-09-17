@@ -68,9 +68,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
     private Boolean isLoggingOut = false;
 
     private LinearLayout mCustomerInfo;
-    private TextView mCustomerName;
-    private TextView mCustomerPhone;
-    private TextView mCustomerDestination;
+    private TextView mCustomerName, mCustomerPhone;
 
 
 
@@ -92,14 +90,15 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
         mCustomerInfo = (LinearLayout) findViewById(R.id.customerInfo);
         mCustomerName = (TextView) findViewById(R.id.customerName);
-        mCustomerPhone = (TextView) findViewById(R.id.customenPhone);
-        mCustomerDestination = (TextView) findViewById(R.id.customerDestination);
+        mCustomerPhone = (TextView) findViewById(R.id.customerPhone);
 
 
 
 
-        mSettings = (Button) findViewById(R.id.settings);
+
         mLogout = (Button) findViewById(R.id.logout);
+        mSettings = (Button) findViewById(R.id.settings);
+
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,24 +120,29 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
                 Intent intent = new Intent(DriverMapActivity.this, DriverSettingsActivity.class);
                 startActivity(intent);
                 finish();
-                return;
+
             }
         });
 
         getAssignedCustomer();
-        getAssignedCustomerInfo();
+
     }
 
     private void getAssignedCustomer(){
         String driverId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId);
+        DatabaseReference assignedCustomerRef = FirebaseDatabase.getInstance().getReference().child("Users").child("Drivers").child(driverId).child("customerRideId");
         assignedCustomerRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()){
                         customerId = dataSnapshot.getValue().toString();
                         getAssignedCustomerPickupLocation();
+                        getAssignedCustomerInfo();
+                    mCustomerInfo.setVisibility(View.GONE);
+                    mCustomerName.setText("");
+                    mCustomerPhone.setText("");
                     }
+
                 }
 
 
@@ -187,7 +191,7 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
 
     private void getAssignedCustomerInfo() {
         mCustomerInfo.setVisibility(View.VISIBLE);
-        final DatabaseReference mCustomerDataBase = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId);
+        DatabaseReference mCustomerDataBase = FirebaseDatabase.getInstance().getReference().child("Users").child("Customers").child(customerId);
         mCustomerDataBase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -210,7 +214,6 @@ public class DriverMapActivity extends FragmentActivity implements OnMapReadyCal
             }
         });
     }
-
 
 
 

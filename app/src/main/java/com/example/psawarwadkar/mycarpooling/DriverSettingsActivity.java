@@ -115,6 +115,7 @@ public class DriverSettingsActivity extends AppCompatActivity {
         mDriverDatabase.updateChildren(userInfo);
 
         finish();
+        return;
 
     }
 

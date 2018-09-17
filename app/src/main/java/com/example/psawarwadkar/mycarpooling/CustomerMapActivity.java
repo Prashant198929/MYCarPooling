@@ -84,7 +84,7 @@ public class CustomerMapActivity extends FragmentActivity implements OnMapReadyC
         }
 
 
-        mDriverInfo = (LinearLayout) findViewById(R.id.customerInfo);
+        mDriverInfo = (LinearLayout) findViewById(R.id.driverInfo);
         mDriverName = (TextView) findViewById(R.id.driverName);
         mDriverPhone = (TextView) findViewById(R.id.driverPhone);
         mDriverCar = (TextView) findViewById(R.id.driverCar);

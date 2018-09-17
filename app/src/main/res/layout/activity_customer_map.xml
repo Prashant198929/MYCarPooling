@@ -6,10 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".CustomerMapActivity">
 
-    <RelativeLayout
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"></RelativeLayout>
 
     <Button
         android:layout_width="wrap_content"
@@ -25,34 +22,25 @@
         android:text="Settings"></Button>
 
 
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".DriverMapActivity" />
+        android:layout_height="match_parent"/>
+
 
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:id="@+id/driverInfo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:orientation="horizontal"
-            android:visibility="gone">
+        android:id="@+id/driverInfo"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:background="@color/colorPrimary"
+        android:visibility="gone">
 
 
-                <TextView
-                    android:id="@+id/driverDestination"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10sp"
-                    android:text="Destination: --" />
 
                 <TextView
                     android:id="@+id/driverName"
@@ -76,7 +64,8 @@
                     android:paddingTop="20sp" />
 
 
-            </LinearLayout>
+    </LinearLayout>
+
 
         <Button
             android:id="@+id/request"
@@ -85,6 +74,6 @@
             android:layout_gravity="bottom"
             android:text="call MyCar" />
 
-    </LinearLayout>
+
 
 </FrameLayout>
